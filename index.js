@@ -10,9 +10,11 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 app.use(express.static('build'));
 
 app.get('/api/persons', (req, res) => {
-    Contact.find({}).then(contacts => {
-        res.json(contacts);
-    });
+    Contact.find({})
+        .then(contacts => {
+            res.json(contacts);
+        })
+        .catch(error => next(error));
 });
 
 app.get('/api/persons/:id', (req, res) => {
@@ -39,7 +41,10 @@ app.post('/api/persons', (req, res) => {
         number: body.number,
     });
 
-    contact.save().then(savedContact => res.json(savedContact));
+    contact
+        .save()
+        .then(savedContact => res.json(savedContact))
+        .catch(error => next(error));
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
