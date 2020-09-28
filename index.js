@@ -34,21 +34,12 @@ app.post('/api/persons', (req, res) => {
         });
     }
 
-    if (persons.find(person => person.name === body.name)) {
-        return res.status(400).json({
-            error: 'name must be unique',
-        });
-    }
-
-    const person = {
+    const contact = new Contact({
         name: body.name,
         number: body.number,
-        id: generateId(),
-    };
+    });
 
-    persons = persons.concat(person);
-
-    res.json(person);
+    contact.save().then(savedContact => res.json(savedContact));
 });
 
 app.delete('/api/persons/:id', (req, res) => {
