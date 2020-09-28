@@ -9,7 +9,7 @@ morgan.token('body', (req, res) => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(express.static('build'));
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
     Contact.find({})
         .then(contacts => {
             res.json(contacts);
@@ -17,7 +17,7 @@ app.get('/api/persons', (req, res) => {
         .catch(error => next(error));
 });
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
     const id = Number(req.params.id);
     const person = persons.find(person => person.id === id);
     if (person) {
@@ -27,7 +27,7 @@ app.get('/api/persons/:id', (req, res) => {
     }
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body;
 
     if (!body.name || !body.number) {
@@ -44,6 +44,21 @@ app.post('/api/persons', (req, res) => {
     contact
         .save()
         .then(savedContact => res.json(savedContact))
+        .catch(error => next(error));
+});
+
+app.put('/api/persons/:id', (req, res, next) => {
+    const body = req.body;
+
+    const contact = {
+        name: body.name,
+        number: body.number,
+    };
+
+    Contact.findByIdAndUpdate(req.params.id, contact, { new: true })
+        .then(updatedContact => {
+            res.json(updatedContact);
+        })
         .catch(error => next(error));
 });
 
