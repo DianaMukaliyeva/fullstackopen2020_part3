@@ -45,8 +45,10 @@ const App = () => {
     const addNotification = (message, error) => {
         setError(error);
         setMessage(message);
-        setNewName('');
-        setNewNumber('');
+        if (!error) {
+            setNewName('');
+            setNewNumber('');
+        }
     };
 
     const addContact = event => {
