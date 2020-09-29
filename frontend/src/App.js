@@ -22,7 +22,7 @@ const App = () => {
         setTimeout(() => {
             setMessage(null);
             setError(null);
-        }, 5000);
+        }, 7000);
     }, [message]);
 
     const personsToShow =
@@ -67,17 +67,21 @@ const App = () => {
                         );
                         addNotification(`Contact ${newName} was successfully updated`, false);
                     })
-                    .catch(() => {
-                        setPersons(persons.filter(person => person.id !== sameNameContact.id));
-                        addNotification(`Contact ${newName} does not exists`, true);
+                    .catch(error => {
+                        addNotification(error.response.data.err, true);
                     });
             }
         } else {
             const newContact = { name: newName, number: newNumber };
-            personService.create(newContact).then(returnedContact => {
-                setPersons(persons.concat(returnedContact));
-                addNotification(`Added ${returnedContact.name}`, false);
-            });
+            personService
+                .create(newContact)
+                .then(returnedContact => {
+                    setPersons(persons.concat(returnedContact));
+                    addNotification(`Added ${returnedContact.name}`, false);
+                })
+                .catch(error => {
+                    addNotification(error.response.data.err, true);
+                });
         }
     };
 
