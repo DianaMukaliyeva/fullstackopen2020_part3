@@ -73,7 +73,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 });
 
 app.get('/info', (req, res, next) => {
-    const amount = Contact.count()
+    const amount = Contact.countDocuments()
         .then(count => {
             const message = `
             <p>Phonebook has info for ${count} people</p>
@@ -83,14 +83,16 @@ app.get('/info', (req, res, next) => {
         .catch(error => next(error));
 });
 
-const errorHandler = (error, request, response, next) => {
-    console.error(error.message);
+const errorHandler = (err, req, res, next) => {
+    console.error(err.message);
 
-    if (error.name === 'CastError') {
-        return response.status(400).send({ error: 'malformatted id' });
+    if (err.name === 'CastError') {
+        return res.status(400).send({ err: 'malformatted id' });
+    } else if (err.name === 'ValidationError') {
+        return res.status(400).json({ err: err.message });
     }
 
-    next(error);
+    next(err);
 };
 
 app.use(errorHandler);
